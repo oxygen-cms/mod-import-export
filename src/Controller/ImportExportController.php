@@ -5,6 +5,8 @@ namespace OxygenModule\ImportExport\Controller;
 use App;
 use Artisan;
 use Config;
+use Exception;
+use OxygenModule\ImportExport\ImportExportManager;
 use View;
 use Lang;
 use Response;
@@ -28,7 +30,7 @@ class ImportExportController extends BlueprintController {
     /**
      * Shows the update form.
      *
-     * @return Response
+     * @return \Illuminate\Http\Response
      */
 
     public function getList() {
@@ -40,13 +42,11 @@ class ImportExportController extends BlueprintController {
     /**
      * Create a backup of the database/other content and save it as a file.
      *
-     * @return Response
+     * @return \Illuminate\Http\Response
      */
-    public function getExport() {
-        $manager = App::make('oxygen.backup');
-
+    public function getExport(ImportExportManager $manager) {
         try {
-            return Response::download($manager->make());
+            return Response::download($manager->export());
         } catch(Exception $e) {
             return Response::notification(new Notification(Lang::get('messages.utilities.backupFailed')));
         }
@@ -55,7 +55,7 @@ class ImportExportController extends BlueprintController {
     /**
      * Uploads a backup of the content and restores it.
      *
-     * @return Response
+     * @return \Illuminate\Http\Response
      */
     public function postImport() {
         /*$manager = App::make('oxygen.backup');

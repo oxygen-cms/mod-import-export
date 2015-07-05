@@ -4,6 +4,7 @@ namespace OxygenModule\ImportExport;
 
 use Oxygen\Core\Blueprint\BlueprintManager;
 use Oxygen\Data\BaseServiceProvider;
+use OxygenModule\ImportExport\Database\DatabaseManager;
 use OxygenModule\Security\Repository\DoctrineLoginLogRepository;
 use OxygenModule\Security\Repository\LoginLogRepositoryInterface;
 
@@ -39,6 +40,12 @@ class ImportExportServiceProvider extends BaseServiceProvider {
 	 * @return void
 	 */
 
-	public function register() {}
+	public function register() {
+        $this->app->singleton(ImportExportManager::class, function($app) {
+            $manager = new ImportExportManager($app['env']);
+            $manager->addWorker(new DatabaseWorker($app['config'], $app[DatabaseManager::class]));
+            return $manager;
+        });
+    }
 
 }

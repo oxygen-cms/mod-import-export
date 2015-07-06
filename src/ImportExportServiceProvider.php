@@ -2,12 +2,9 @@
 
 namespace OxygenModule\ImportExport;
 
-use Illuminate\Foundation\Http\Kernel;
 use Oxygen\Core\Blueprint\BlueprintManager;
 use Oxygen\Data\BaseServiceProvider;
 use OxygenModule\ImportExport\Database\DatabaseManager;
-use OxygenModule\Security\Repository\DoctrineLoginLogRepository;
-use OxygenModule\Security\Repository\LoginLogRepositoryInterface;
 
 class ImportExportServiceProvider extends BaseServiceProvider {
 
@@ -47,7 +44,7 @@ class ImportExportServiceProvider extends BaseServiceProvider {
 
 	public function register() {
         $this->app->singleton(ImportExportManager::class, function($app) {
-            $manager = new ImportExportManager($app['config'], $app[Kernel::class], $app['env']);
+            $manager = new ImportExportManager($app['config'], $app, $app['env']);
             $manager->addWorker(new DatabaseWorker($app['config'], $app[DatabaseManager::class]));
             return $manager;
         });

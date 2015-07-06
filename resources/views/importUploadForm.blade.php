@@ -10,7 +10,7 @@
 <div class="Row--noLayout">
     <div class="FileUpload">
         <input name="file[]" multiple>
-        <span class="FileUpload-message FileUpload--js">Drop files here</span>
+        <span class="FileUpload-message FileUpload--js">Drop content here</span>
         <span class="FileUpload-subMessage FileUpload--js">(or click to select)</span>
         <span class="FileUpload-message FileUpload--noJs">Click to select files</span>
         <span class="FileUpload-subMessage FileUpload--noJs">(then click the 'Upload' button)</span>
@@ -19,5 +19,5 @@
 
 <div class="Row Form-footer">
     <a href="{{{ URL::route($blueprint->getRouteName('getList')) }}}" class="Button Button-color--white">Close</a>
-    <button type="submit" class="Button Button-color--green">Upload</button>
+    <button type="submit" class="Button Button-color--green">Import</button>
 </div>

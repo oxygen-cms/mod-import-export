@@ -43,7 +43,7 @@ use Oxygen\Core\Html\Form\Form;use Oxygen\Core\Html\Header\Header;
             $form = new Form($blueprint->getAction('postImport'));
             $form->setUseMultipartFormData(true);
 
-            $form->addContent(View::make('oxygen/mod-import-export::importUploadForm', ['blueprint' => $blueprint]));
+            $form->addContent(View::make('oxygen/mod-import-export::importUploadForm', ['blueprint' => $blueprint, 'toolbarItem' => $toolbarItem]));
 
             echo $form->render();
         ?>

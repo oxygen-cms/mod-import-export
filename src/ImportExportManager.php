@@ -12,7 +12,6 @@ class ImportExportManager {
      *
      * @var array
      */
-
     protected $workers;
 
     /**

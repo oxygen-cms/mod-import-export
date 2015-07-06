@@ -58,6 +58,7 @@ class ImportExportController extends BlueprintController {
      * @return \Illuminate\Http\Response
      */
     public function postImport() {
+        return Response::notification(new Notification('Imported'));
         /*$manager = App::make('oxygen.backup');
 
         try {

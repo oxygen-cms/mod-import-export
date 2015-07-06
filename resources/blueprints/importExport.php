@@ -5,7 +5,8 @@ use OxygenModule\ImportExport\Controller\ImportExportController;
 
 Blueprint::make('ImportExport', function($blueprint) {
     $blueprint->setController(ImportExportController::class);
-    $blueprint->setBothDisplayNames('Import/Export');
+    $blueprint->setDisplayName('Import/Export');
+    $blueprint->disablePluralForm();
     $blueprint->setIcon('save');
 
     $blueprint->setPrimaryToolbarItem('getList');

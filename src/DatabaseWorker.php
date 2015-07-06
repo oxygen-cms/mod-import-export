@@ -27,7 +27,7 @@ class DatabaseWorker implements WorkerInterface {
      * @throws Exception if the database failed to backup
      */
     public function getFiles($backupKey) {
-        $filename = $this->config->get('backup::path') . $backupKey . '.sql';
+        $filename = $this->config->get('oxygen.mod-import-export.path') . $backupKey . '.sql';
 
         $this->database->backup($filename);
 
@@ -35,4 +35,19 @@ class DatabaseWorker implements WorkerInterface {
             $filename => $backupKey . '.sql'
         ];
     }
+
+    /**
+     * Cleans up any temporary files that were created after they have been added to the ZIP archive.
+     *
+     * @param string $backupKey
+     * @return void
+     */
+    public function cleanFiles($backupKey) {
+        $filename = $this->config->get('oxygen.mod-import-export.path') . $backupKey . '.sql';
+
+        if(file_exists($filename)) {
+            unlink($filename);
+        }
+    }
+
 }

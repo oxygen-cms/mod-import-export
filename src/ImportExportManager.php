@@ -3,6 +3,7 @@
 namespace OxygenModule\ImportExport;
 
 use Exception;
+use Illuminate\Contracts\Config\Repository;
 use ZipArchive;
 
 class ImportExportManager {
@@ -23,13 +24,20 @@ class ImportExportManager {
     protected $environment;
 
     /**
+     * @var \Illuminate\Contracts\Config\Repository
+     */
+    private $config;
+
+    /**
      * Constructs the BackupManager.
      *
-     * @param string$environment
+     * @param \Illuminate\Contracts\Config\Repository $config
+     * @param string                                  $environment
      */
 
-    public function __construct($environment) {
+    public function __construct(Repository $config, $environment) {
         $this->environment = $environment;
+        $this->config = $config;
     }
 
     /**
@@ -60,7 +68,7 @@ class ImportExportManager {
      */
     public function export() {
         $key = $this->getBackupKey();
-        $folder = storage_path() . '/backups/';
+        $folder = $this->config->get('oxygen.mod-import-export.path');
         if(!file_exists($folder)) {
             mkdir($folder);
         }
@@ -75,6 +83,7 @@ class ImportExportManager {
                         throw new Exception("Zip Failed to Add File");
                     }
                 }
+                $worker->cleanFiles($key);
             }
 
             if($zip->close()) {

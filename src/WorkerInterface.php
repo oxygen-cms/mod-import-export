@@ -13,4 +13,12 @@ interface WorkerInterface {
      */
     public function getFiles($backupKey);
 
+    /**
+     * Cleans up any temporary files that were created after they have been added to the ZIP archive.
+     *
+     * @param string $backupKey
+     * @return void
+     */
+    public function cleanFiles($backupKey);
+
 } 

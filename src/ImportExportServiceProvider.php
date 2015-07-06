@@ -25,10 +25,12 @@ class ImportExportServiceProvider extends BaseServiceProvider {
 	public function boot() {
         $this->loadViewsFrom(__DIR__ . '/../resources/views', 'oxygen/mod-import-export');
         $this->loadTranslationsFrom(__DIR__ . '/../resources/lang', 'oxygen/mod-import-export');
+        $this->mergeConfigFrom(__DIR__ . '/../config/config.php', 'oxygen.mod-import-export');
 
         $this->publishes([
             __DIR__ . '/../resources/lang' => base_path('resources/lang/vendor/oxygen/mod-import-export'),
-            __DIR__ . '/../resources/views' => base_path('resources/views/vendor/oxygen/mod-import-export')
+            __DIR__ . '/../resources/views' => base_path('resources/views/vendor/oxygen/mod-import-export'),
+            __DIR__ . '/../config/config.php' => config_path('oxygen/mod-import-export.php')
         ]);
 
         $this->app[BlueprintManager::class]->loadDirectory(__DIR__ . '/../resources/blueprints');
@@ -42,7 +44,7 @@ class ImportExportServiceProvider extends BaseServiceProvider {
 
 	public function register() {
         $this->app->singleton(ImportExportManager::class, function($app) {
-            $manager = new ImportExportManager($app['env']);
+            $manager = new ImportExportManager($app['config'], $app['env']);
             $manager->addWorker(new DatabaseWorker($app['config'], $app[DatabaseManager::class]));
             return $manager;
         });

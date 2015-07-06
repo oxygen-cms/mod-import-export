@@ -7,7 +7,7 @@ Blueprint::make('ImportExport', function($blueprint) {
     $blueprint->setController(ImportExportController::class);
     $blueprint->setDisplayName('Import/Export');
     $blueprint->disablePluralForm();
-    $blueprint->setIcon('save');
+    $blueprint->setIcon('download');
 
     $blueprint->setPrimaryToolbarItem('getList');
 
@@ -29,7 +29,7 @@ Blueprint::make('ImportExport', function($blueprint) {
     $blueprint->makeToolbarItem([
         'action'    => 'getExport',
         'label'     => 'Export Content',
-        'icon'      => 'save',
+        'icon'      => 'download',
         'color'     => 'blue'
     ]);
 

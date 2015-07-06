@@ -8,7 +8,7 @@
 
     $header = Header::fromBlueprint(
         $blueprint,
-        Lang::get('oxygen/mod-import-export::title')
+        Lang::get('oxygen/mod-import-export::ui.title')
     );
 
 ?>
@@ -24,7 +24,7 @@
     ?>
         <div class="Row--visual">
             <h2 class="heading-gamma">Backup</h2>
-            {{ $toolbarItem->render(['margin' => 'vertical']) }}
+            {!! $toolbarItem->render(['margin' => 'vertical']) !!}
             <p>
                 Creates a backup of all the content on the website, including the entire database and media files.<br>
                 It is recommended to make regular backups to ensure the safety of your content.

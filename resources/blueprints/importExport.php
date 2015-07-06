@@ -18,13 +18,14 @@ Blueprint::make('ImportExport', function($blueprint) {
     $blueprint->makeToolbarItem([
         'action'    => 'getList',
         'label'     => 'Import/Export',
-        'icon'      => 'save',
+        'icon'      => 'download',
         'color'     => 'white'
     ]);
 
     $blueprint->makeAction([
         'name'        => 'getExport',
-        'pattern'     => 'export'
+        'pattern'     => 'export',
+        'useSmoothState' => false
     ]);
     $blueprint->makeToolbarItem([
         'action'    => 'getExport',

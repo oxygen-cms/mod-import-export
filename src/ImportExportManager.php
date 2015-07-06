@@ -71,7 +71,9 @@ class ImportExportManager {
             foreach($this->workers as $worker) {
                 $files = $worker->getFiles($key);
                 foreach($files as $realpath => $newpath) {
-                    $zip->addFile($realpath, basename($filename) . '/' . $newpath);
+                    if(!$zip->addFile($realpath, basename($filename) . '/' . $newpath)) {
+                        throw new Exception("Zip Failed to Add File");
+                    }
                 }
             }
 

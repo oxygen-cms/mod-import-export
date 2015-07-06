@@ -12,4 +12,6 @@
 
 return [
 
+    'backupFailed' => 'The backup failed'
+
 ];

@@ -2,6 +2,7 @@
 
 namespace OxygenModule\ImportExport;
 
+use Illuminate\Foundation\Http\Kernel;
 use Oxygen\Core\Blueprint\BlueprintManager;
 use Oxygen\Data\BaseServiceProvider;
 use OxygenModule\ImportExport\Database\DatabaseManager;
@@ -33,6 +34,8 @@ class ImportExportServiceProvider extends BaseServiceProvider {
             __DIR__ . '/../config/config.php' => config_path('oxygen/mod-import-export.php')
         ]);
 
+        $this->app['router']->middleware('oxygen.deleteTemporaryFiles', DeleteTemporaryFilesMiddleware::class);
+
         $this->app[BlueprintManager::class]->loadDirectory(__DIR__ . '/../resources/blueprints');
 	}
 
@@ -44,7 +47,7 @@ class ImportExportServiceProvider extends BaseServiceProvider {
 
 	public function register() {
         $this->app->singleton(ImportExportManager::class, function($app) {
-            $manager = new ImportExportManager($app['config'], $app['env']);
+            $manager = new ImportExportManager($app['config'], $app[Kernel::class], $app['env']);
             $manager->addWorker(new DatabaseWorker($app['config'], $app[DatabaseManager::class]));
             return $manager;
         });

@@ -4,6 +4,7 @@ namespace OxygenModule\ImportExport;
 
 use Exception;
 use Illuminate\Contracts\Config\Repository;
+use Illuminate\Foundation\Application;
 use ZipArchive;
 
 class ImportExportManager {
@@ -23,6 +24,8 @@ class ImportExportManager {
 
     protected $environment;
 
+    protected $app;
+
     /**
      * @var \Illuminate\Contracts\Config\Repository
      */
@@ -32,12 +35,14 @@ class ImportExportManager {
      * Constructs the BackupManager.
      *
      * @param \Illuminate\Contracts\Config\Repository $config
+     * @param \Illuminate\Foundation\Application      $app
      * @param string                                  $environment
      */
 
-    public function __construct(Repository $config, $environment) {
+    public function __construct(Repository $config, Application $app, $environment) {
         $this->environment = $environment;
         $this->config = $config;
+        $this->app = $app;
     }
 
     /**
@@ -80,13 +85,16 @@ class ImportExportManager {
                 $files = $worker->getFiles($key);
                 foreach($files as $realpath => $newpath) {
                     if(!$zip->addFile($realpath, basename($filename) . '/' . $newpath)) {
-                        throw new Exception("Zip Failed to Add File");
+                        throw new Exception('Zip Failed to Add File: ' . $realpath . ' => ' . basename($filename) . '/' . $newpath);
                     }
                 }
-                $worker->cleanFiles($key);
             }
 
             if($zip->close()) {
+                foreach($this->workers as $worker) {
+                    $worker->cleanFiles($key);
+                }
+                $this->app['temporaryFilesToDelete'] = $filename;
                 return $filename;
             } else {
                 throw new Exception("Zip File Failed To Close");

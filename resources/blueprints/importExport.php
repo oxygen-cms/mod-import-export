@@ -25,6 +25,7 @@ Blueprint::make('ImportExport', function($blueprint) {
     $blueprint->makeAction([
         'name'        => 'getExport',
         'pattern'     => 'export',
+        'middleware'  => 'oxygen.deleteTemporaryFiles',
         'useSmoothState' => false
     ]);
     $blueprint->makeToolbarItem([

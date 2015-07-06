@@ -5,8 +5,7 @@ use OxygenModule\ImportExport\Controller\ImportExportController;
 
 Blueprint::make('ImportExport', function($blueprint) {
     $blueprint->setController(ImportExportController::class);
-    $blueprint->setDisplayName('Import/Export', Blueprint::SINGULAR);
-    $blueprint->setDisplayName('Import/Export', Blueprint::PLURAL);
+    $blueprint->setBothDisplayNames('Import/Export');
     $blueprint->setIcon('save');
 
     $blueprint->setPrimaryToolbarItem('getList');
@@ -43,5 +42,5 @@ Blueprint::make('ImportExport', function($blueprint) {
         'label'     => 'Import Content',
         'icon'      => 'folder-open-o'
     ]);
-    
+
 });

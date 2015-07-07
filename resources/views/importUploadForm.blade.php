@@ -16,7 +16,7 @@
         <span class="ProgressBar-fill"></span>
     </div>
     <div class="FileUpload">
-        <input name="file[]" type="file">
+        <input name="file" type="file">
         <span class="FileUpload-message FileUpload--js">Drop content here</span>
         <span class="FileUpload-subMessage FileUpload--js">(or click to select)</span>
         <span class="FileUpload-message FileUpload--noJs">Click to select files</span>

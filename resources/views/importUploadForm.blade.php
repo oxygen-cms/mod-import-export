@@ -3,6 +3,12 @@
     <p>
         Imports content into the database, overwriting any existing content.
     </p>
+    <p>
+        <strong>WARNING:</strong><br>
+        This will <strong>erase all content</strong> currently in the database.
+        Make sure that you have backed up any existing content and are absolutely sure you want to overwrite it with new data.<br>
+        <strong>Do not use content dumps from an untrusted source</strong>, as the import process executes raw database queries from the dump file
+    </p>
 </div>
 
 <div class="Row--visual">

@@ -2,6 +2,8 @@
 
 namespace OxygenModule\ImportExport;
 
+use ZipArchive;
+
 interface WorkerInterface {
 
     /**
@@ -11,7 +13,7 @@ interface WorkerInterface {
      * @return mixed
      * @throws \Exception if the files could not be loaded or generated
      */
-    public function getFiles($backupKey);
+    public function export($backupKey);
 
     /**
      * Cleans up any temporary files that were created after they have been added to the ZIP archive.
@@ -19,6 +21,13 @@ interface WorkerInterface {
      * @param string $backupKey
      * @return void
      */
-    public function cleanFiles($backupKey);
+    public function postExport($backupKey);
+
+    /**
+     * Cleans up any temporary files that were created after they have been added to the ZIP archive.
+     *
+     * @param \ZipArchive $zip
+     */
+    public function import(ZipArchive $zip);
 
 } 

@@ -11,11 +11,11 @@ use OxygenModule\ImportExport\ImportExportManager;
 use View;
 use Lang;
 use Response;
+use Validator;
 
 use Oxygen\Core\Blueprint\BlueprintManager;
 use Oxygen\Core\Http\Notification;
 use Oxygen\Core\Controller\BlueprintController;
-use ZipArchive;
 
 class ImportExportController extends BlueprintController {
 
@@ -43,6 +43,7 @@ class ImportExportController extends BlueprintController {
     /**
      * Create a backup of the database/other content and save it as a file.
      *
+     * @param \OxygenModule\ImportExport\ImportExportManager $manager
      * @return \Illuminate\Http\Response
      */
     public function getExport(ImportExportManager $manager) {
@@ -56,10 +57,11 @@ class ImportExportController extends BlueprintController {
     /**
      * Uploads a backup of the content and restores it.
      *
-     * @param \Illuminate\Http\Request $input
+     * @param \Illuminate\Http\Request                       $input
+     * @param \OxygenModule\ImportExport\ImportExportManager $manager
      * @return \Illuminate\Http\Response
      */
-    public function postImport(Request $input) {
+    public function postImport(Request $input, ImportExportManager $manager) {
         // if no file has been uploaded
         if(!$input->hasFile('file')) {
             // guess if post_max_size has been reached
@@ -76,6 +78,10 @@ class ImportExportController extends BlueprintController {
 
         $file = $input->file('file');
 
+        if(is_array($file)) {
+            $file = $file[0];
+        }
+
         if(!$file->isValid()) {
             $messages = new MessageBag();
             return Response::notification(new Notification(Lang::get('oxygen/mod-import-export::messages.upload.failed', [
@@ -90,8 +96,10 @@ class ImportExportController extends BlueprintController {
         );
 
         if($validator->fails()) {
-            return Response::notification(new Notification($validator->messages->first(), Notification::FAILED));
+            return Response::notification(new Notification($validator->messages()->first(), Notification::FAILED));
         }
+
+        $manager->import($file->getRealPath());
 
         return Response::notification(new Notification(Lang::get('oxygen/mod-import-export::messages.contentImported')), ['refresh' => true, 'hardRedirect' => true]);
     }

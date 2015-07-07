@@ -5,6 +5,7 @@ namespace OxygenModule\ImportExport;
 use OxygenModule\ImportExport\Database\DatabaseManager;
 use Exception;
 use Illuminate\Config\Repository;
+use ZipArchive;
 
 class DatabaseWorker implements WorkerInterface {
 
@@ -26,7 +27,7 @@ class DatabaseWorker implements WorkerInterface {
      * @return array
      * @throws Exception if the database failed to backup
      */
-    public function getFiles($backupKey) {
+    public function export($backupKey) {
         $filename = $this->config->get('oxygen.mod-import-export.path') . $backupKey . '.sql';
 
         $this->database->backup($filename);
@@ -42,7 +43,7 @@ class DatabaseWorker implements WorkerInterface {
      * @param string $backupKey
      * @return void
      */
-    public function cleanFiles($backupKey) {
+    public function postExport($backupKey) {
         $filename = $this->config->get('oxygen.mod-import-export.path') . $backupKey . '.sql';
 
         if(file_exists($filename)) {
@@ -50,4 +51,15 @@ class DatabaseWorker implements WorkerInterface {
         }
     }
 
+    /**
+     * Cleans up any temporary files that were created after they have been added to the ZIP archive.
+     *
+     * @param \ZipArchive $zip
+     */
+    public function import(ZipArchive $zip) {
+        for ($i = 0; $i < $zip->numFiles; $i++) {
+            $filename = $zip->getNameIndex($i);
+            var_dump($filename);
+        }
+    }
 }

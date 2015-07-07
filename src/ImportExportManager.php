@@ -79,8 +79,7 @@ class ImportExportManager {
         }
         $filename = $folder . $key . '.zip';
 
-        $zip = new ZipArchive();
-        if($zip->open($filename, ZipArchive::CREATE)) {
+        $this->workWithZipFile($filename, ZipArchive::CREATE, function(ZipArchive $zip) use($key, $filename) {
             foreach($this->workers as $worker) {
                 $files = $worker->getFiles($key);
                 foreach($files as $realpath => $newpath) {
@@ -89,18 +88,48 @@ class ImportExportManager {
                     }
                 }
             }
+        });
 
-            if($zip->close()) {
-                foreach($this->workers as $worker) {
-                    $worker->cleanFiles($key);
-                }
-                $this->app['temporaryFilesToDelete'] = $filename;
-                return $filename;
-            } else {
-                throw new Exception("Zip File Failed To Close");
+        foreach($this->workers as $worker) {
+            $worker->cleanFiles($key);
+        }
+        $this->app['temporaryFilesToDelete'] = $filename;
+        return $filename;
+    }
+
+    /**
+     * Imports content from the ZIP file at the given path.
+     *
+     * @param $path
+     * @throws \Exception if the zip file couldn't be read
+     */
+    public function import($path) {
+        $zip = new ZipArchive();
+
+        $this->workWithZipFile($path, 0, function(ZipArchive $zip) {
+            foreach($this->workers as $worker) {
+                $worker->import($zip);
+            }
+        });
+    }
+
+    /**
+     * Works with the contents of a zip file.
+     *
+     * @param          $path
+     * @param          $flags
+     * @param callable $callback
+     * @throws \Exception if the zip file failed to open or close
+     */
+    protected function workWithZipFile($path, $flags, callable $callback) {
+        $zip = new ZipArchive();
+        if($zip->open($path, $flags)) {
+            $callback($zip);
+            if(!$zip->close()) {
+                throw new Exception("Failed To Close Zip File");
             }
         } else {
-            throw new Exception("Zip File Failed To Open");
+            throw new Exception("Failed to Open Zip File");
         }
     }
 

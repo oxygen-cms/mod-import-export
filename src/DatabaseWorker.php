@@ -62,6 +62,13 @@ class DatabaseWorker implements WorkerInterface {
             if(pathinfo($filename, PATHINFO_EXTENSION) == 'sql') {
                 $zip->extractTo($this->config->get('oxygen.mod-import-export.path'), [$filename]);
             }
+
+            $path = $this->config->get('oxygen.mod-import-export.path') . $filename;
+
+            $this->database->restore($path);
+            
+            unlink($path);
+            rmdir(dirname($path));
         }
     }
 }

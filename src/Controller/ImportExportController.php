@@ -6,6 +6,7 @@ use App;
 use Artisan;
 use Config;
 use Exception;
+use Illuminate\Http\Request;
 use OxygenModule\ImportExport\ImportExportManager;
 use View;
 use Lang;
@@ -55,17 +56,44 @@ class ImportExportController extends BlueprintController {
     /**
      * Uploads a backup of the content and restores it.
      *
+     * @param \Illuminate\Http\Request $input
      * @return \Illuminate\Http\Response
      */
-    public function postImport() {
-        return Response::notification(new Notification('Imported'));
-        /*$manager = App::make('oxygen.backup');
+    public function postImport(Request $input) {
+        // if no file has been uploaded
+        if(!$input->hasFile('file')) {
+            // guess if post_max_size has been reached
+            if (empty($_FILES) && empty($_POST) && isset($_SERVER['REQUEST_METHOD']) && strtolower($_SERVER['REQUEST_METHOD']) == 'post') {
+                $message = Lang::get('oxygen/mod-import-export::messages.upload.tooLarge');
+            } else {
+                $message = Lang::get('oxygen/mod-import-export::messages.upload.noFiles');
+            }
 
-        try {
-            return Response::download($manager->make());
-        } catch(Exception $e) {
-            return Response::notification(new Notification(Lang::get('messages.utilities.backupFailed')));
-        }*/
+            return Response::notification(
+                new Notification($message, Notification::FAILED)
+            );
+        }
+
+        $file = $input->file('file');
+
+        if(!$file->isValid()) {
+            $messages = new MessageBag();
+            return Response::notification(new Notification(Lang::get('oxygen/mod-import-export::messages.upload.failed', [
+                'name' => $file->getClientOriginalName(),
+                'error' => $file->getError()
+            ]), Notification::FAILED));
+        }
+
+        $validator = Validator::make(
+            ['file' => $file],
+            ['file' => 'mimes:zip']
+        );
+
+        if($validator->fails()) {
+            return Response::notification(new Notification($validator->messages->first(), Notification::FAILED));
+        }
+
+        return Response::notification(new Notification(Lang::get('oxygen/mod-import-export::messages.contentImported')), ['refresh' => true, 'hardRedirect' => true]);
     }
 
 

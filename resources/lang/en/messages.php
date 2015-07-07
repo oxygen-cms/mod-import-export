@@ -12,6 +12,14 @@
 
 return [
 
-    'backupFailed' => 'The backup failed'
+    'backupFailed' => 'The backup failed',
+
+    'contentImported' => 'The content was imported successfully',
+
+    'upload' => [
+        'noFiles'   => 'Please Select a File First',
+        'tooLarge'  => 'Upload too Large',
+        'failed'    => 'File Upload Failed',
+    ]
 
 ];

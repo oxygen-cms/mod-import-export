@@ -5,6 +5,7 @@ namespace OxygenModule\ImportExport;
 use Exception;
 use Illuminate\Contracts\Config\Repository;
 use Illuminate\Foundation\Application;
+use Symfony\Component\HttpFoundation\File\Exception\FileNotFoundException;
 use ZipArchive;
 
 class ImportExportManager {
@@ -83,8 +84,11 @@ class ImportExportManager {
             foreach($this->workers as $worker) {
                 $files = $worker->export($key);
                 foreach($files as $realpath => $newpath) {
-                    if(!$zip->addFile($realpath, basename($filename) . '/' . $newpath)) {
-                        throw new Exception('Zip Failed to Add File: ' . $realpath . ' => ' . basename($filename) . '/' . $newpath);
+                    if(!file_exists($realpath)) {
+                        throw new FileNotFoundException($realpath);
+                    }
+                    if(!$zip->addFile($realpath, $key . '/' . $newpath)) {
+                        throw new Exception('Zip Failed to Add File: ' . $realpath . ' => ' . $key . '/' . $newpath);
                     }
                 }
             }

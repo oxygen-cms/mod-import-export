@@ -57,18 +57,18 @@ class DatabaseWorker implements WorkerInterface {
      * @param \ZipArchive $zip
      */
     public function import(ZipArchive $zip) {
-        for ($i = 0; $i < $zip->numFiles; $i++) {
+        for($i = 0; $i < $zip->numFiles; $i++) {
             $filename = $zip->getNameIndex($i);
             if(pathinfo($filename, PATHINFO_EXTENSION) == 'sql') {
                 $zip->extractTo($this->config->get('oxygen.mod-import-export.path'), [$filename]);
+
+                $path = $this->config->get('oxygen.mod-import-export.path') . $filename;
+
+                $this->database->restore($path);
+
+                unlink($path);
+                rmdir(dirname($path));
             }
-
-            $path = $this->config->get('oxygen.mod-import-export.path') . $filename;
-
-            $this->database->restore($path);
-            
-            unlink($path);
-            rmdir(dirname($path));
         }
     }
 }

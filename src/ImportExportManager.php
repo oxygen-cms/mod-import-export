@@ -81,7 +81,7 @@ class ImportExportManager {
 
         $this->workWithZipFile($filename, ZipArchive::CREATE, function(ZipArchive $zip) use($key, $filename) {
             foreach($this->workers as $worker) {
-                $files = $worker->getFiles($key);
+                $files = $worker->export($key);
                 foreach($files as $realpath => $newpath) {
                     if(!$zip->addFile($realpath, basename($filename) . '/' . $newpath)) {
                         throw new Exception('Zip Failed to Add File: ' . $realpath . ' => ' . basename($filename) . '/' . $newpath);
@@ -91,7 +91,7 @@ class ImportExportManager {
         });
 
         foreach($this->workers as $worker) {
-            $worker->cleanFiles($key);
+            $worker->postExport($key);
         }
         $this->app['temporaryFilesToDelete'] = $filename;
         return $filename;

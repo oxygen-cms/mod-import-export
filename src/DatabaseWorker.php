@@ -59,7 +59,9 @@ class DatabaseWorker implements WorkerInterface {
     public function import(ZipArchive $zip) {
         for ($i = 0; $i < $zip->numFiles; $i++) {
             $filename = $zip->getNameIndex($i);
-            var_dump($filename);
+            if(pathinfo($filename, PATHINFO_EXTENSION) == 'sql') {
+                $zip->extractTo($this->config->get('oxygen.mod-import-export.path'), [$filename]);
+            }
         }
     }
 }

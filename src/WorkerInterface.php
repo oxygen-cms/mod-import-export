@@ -24,7 +24,7 @@ interface WorkerInterface {
     public function postExport($backupKey);
 
     /**
-     * Cleans up any temporary files that were created after they have been added to the ZIP archive.
+     * Imports content from a zip file
      *
      * @param \ZipArchive $zip
      */

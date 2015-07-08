@@ -28,7 +28,6 @@
         "title": "Oxygen Module - Import/Export",
         "readme": "oxygen.md",
         "changes": "changes.md",
-        "icon": "icon.png",
         "providers": [
             {
                 "name": "Import/Export",

@@ -27,6 +27,8 @@ class ImportExportManager {
 
     protected $app;
 
+    public $temporaryFilesToDelete;
+
     /**
      * @var \Illuminate\Contracts\Config\Repository
      */
@@ -44,6 +46,7 @@ class ImportExportManager {
         $this->environment = $environment;
         $this->config = $config;
         $this->app = $app;
+        $this->temporaryFilesToDelete = [];
     }
 
     /**
@@ -97,7 +100,7 @@ class ImportExportManager {
         foreach($this->workers as $worker) {
             $worker->postExport($key);
         }
-        $this->app['temporaryFilesToDelete'] = $filename;
+        $this->temporaryFilesToDelete[] = $filename;
         return $filename;
     }
 

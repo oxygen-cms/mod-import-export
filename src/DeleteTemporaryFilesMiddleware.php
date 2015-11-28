@@ -38,7 +38,7 @@ class DeleteTemporaryFilesMiddleware implements TerminableMiddleware {
      * @return void
      */
     public function terminate($request, $response) {
-        foreach((array) $this->app['temporaryFilesToDelete'] as $file) {
+        foreach($this->app[ImportExportManager::class]->temporaryFilesToDelete as $file) {
             unlink($file);
         }
     }

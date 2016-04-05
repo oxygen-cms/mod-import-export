@@ -4,9 +4,13 @@
 
 <?php
 
-use Oxygen\Core\Html\Form\Form;use Oxygen\Core\Html\Header\Header;
+use Oxygen\Core\Html\Form\Form;
+use Oxygen\Core\Html\Form\Row;
+use Oxygen\Core\Html\Header\Header;
+use Oxygen\Core\Html\Toolbar\ButtonToolbarItem;
+use Oxygen\Core\Html\Toolbar\SubmitToolbarItem;
 
-    $header = Header::fromBlueprint(
+$header = Header::fromBlueprint(
         $blueprint,
         Lang::get('oxygen/mod-import-export::ui.title')
     );
@@ -45,6 +49,13 @@ use Oxygen\Core\Html\Form\Form;use Oxygen\Core\Html\Header\Header;
             $form->setAsynchronous(true);
 
             $form->addContent(View::make('oxygen/mod-import-export::importUploadForm', ['blueprint' => $blueprint, 'toolbarItem' => $toolbarItem]));
+
+            $footer = new Row([
+                new ButtonToolbarItem(Lang::get('oxygen/crud::ui.close'), $blueprint->getAction('getList')),
+                new SubmitToolbarItem(Lang::get('oxygen/mod-import-export::ui.import'))
+            ]);
+            $footer->isFooter = true;
+            $form->addContent($footer);
 
             echo $form->render();
         ?>

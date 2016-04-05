@@ -66,9 +66,9 @@ class ImportExportController extends BlueprintController {
         if(!$input->hasFile('file')) {
             // guess if post_max_size has been reached
             if (empty($_FILES) && empty($_POST) && isset($_SERVER['REQUEST_METHOD']) && strtolower($_SERVER['REQUEST_METHOD']) == 'post') {
-                $message = Lang::get('oxygen/mod-import-export::messages.upload.tooLarge');
+                $message = Lang::get('oxygen/crud::messages.upload.tooLarge');
             } else {
-                $message = Lang::get('oxygen/mod-import-export::messages.upload.noFiles');
+                $message = Lang::get('oxygen/crud::messages.upload.noFiles');
             }
 
             return Response::notification(
@@ -84,7 +84,7 @@ class ImportExportController extends BlueprintController {
 
         if(!$file->isValid()) {
             $messages = new MessageBag();
-            return Response::notification(new Notification(Lang::get('oxygen/mod-import-export::messages.upload.failed', [
+            return Response::notification(new Notification(Lang::get('oxygen/crud::messages.upload.failed', [
                 'name' => $file->getClientOriginalName(),
                 'error' => $file->getError()
             ]), Notification::FAILED));

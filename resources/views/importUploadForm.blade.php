@@ -12,21 +12,13 @@
 </div>
 
 <div class="Row--visual">
-    <div class="ProgressBar FileUpload-progress FileUpload--js">
-        <span class="ProgressBar-fill"></span>
-    </div>
     <div class="FileUpload">
         <div class="FileUpload-dropzone">
             <div class="FileUpload-drop FileUpload--js">Drop files here</div>
             <div class="FileUpload-click Button Button-color--grey">
                 Click to select files
-                <input name="file[]" type="file" multiple>
+                <input name="file[]" type="file">
             </div>
         </div>
     </div>
-</div>
-
-<div class="Row Form-footer">
-    <a href="{{ URL::route($blueprint->getRouteName('getList')) }}" class="Button Button-color--white">Close</a>
-    <button type="submit" class="Button Button-color--green">Import</button>
 </div>

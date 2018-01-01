@@ -2,7 +2,7 @@
 
 namespace OxygenModule\ImportExport\Database\Driver;
 
-use OxygenModule\ImportExport\Database\Console;
+use OxygenModule\ImportExport\Console;
 
 class MySQLDriver implements DriverInterface {
 	protected $console;
@@ -36,7 +36,7 @@ class MySQLDriver implements DriverInterface {
 			escapeshellarg($destinationFile)
 		);
 
-		return $this->console->run($command);
+		$this->console->run($command);
 	}
 
 	public function restore($sourceFile) {
@@ -50,7 +50,7 @@ class MySQLDriver implements DriverInterface {
 			escapeshellarg($sourceFile)
 		);
 
-		return $this->console->run($command);
+		$this->console->run($command);
 	}
 
 	public function getFileExtension() {

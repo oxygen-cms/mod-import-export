@@ -5,8 +5,11 @@ namespace OxygenModule\ImportExport;
 use Exception;
 use Illuminate\Contracts\Config\Repository;
 use Illuminate\Foundation\Application;
-use Symfony\Component\HttpFoundation\File\Exception\FileNotFoundException;
-use ZipArchive;
+use Illuminate\Contracts\Filesystem\FileNotFoundException;
+use OxygenModule\ImportExport\Strategy\SystemZipStrategy;
+use OxygenModule\ImportExport\Strategy\PHPZipImportStrategy;
+use OxygenModule\ImportExport\Strategy\DuplicityStrategy;
+use OxygenModule\ImportExport\Strategy\PHPZipExportStrategy;
 
 class ImportExportManager {
 
@@ -39,6 +42,7 @@ class ImportExportManager {
      *
      * @param \Illuminate\Contracts\Config\Repository $config
      * @param \Illuminate\Foundation\Application      $app
+     * @param \OxygenModule\ImportExport\Strategy     $strategy
      * @param string                                  $environment
      */
 
@@ -81,27 +85,27 @@ class ImportExportManager {
         if(!file_exists($folder)) {
             mkdir($folder);
         }
-        $filename = $folder . $key . '.zip';
+        $name = $folder . $key;
 
-        $this->workWithZipFile($filename, ZipArchive::CREATE, function(ZipArchive $zip) use($key, $filename) {
-            foreach($this->workers as $worker) {
-                $files = $worker->export($key);
-                foreach($files as $realpath => $newpath) {
-                    if(!file_exists($realpath)) {
-                        throw new FileNotFoundException($realpath);
-                    }
-                    if(!$zip->addFile($realpath, $key . '/' . $newpath)) {
-                        throw new Exception('Zip Failed to Add File: ' . $realpath . ' => ' . $key . '/' . $newpath);
-                    }
-                }
-            }
-        });
+        $strategy = new PHPZipExportStrategy($key, $name);
 
         foreach($this->workers as $worker) {
-            $worker->postExport($key);
+            $worker->export($strategy);
         }
-        $this->temporaryFilesToDelete[] = $filename;
-        return $filename;
+
+        if(app()->runningInConsole()) {
+            echo "Comitting...\n";
+        }
+        $strategy->commit();
+        if(app()->runningInConsole()) {
+            echo "Comitted\n";
+        }
+
+        foreach($this->workers as $worker) {
+            $worker->postExport($strategy);
+        }
+
+        return $name . '.zip';
     }
 
     /**
@@ -111,32 +115,13 @@ class ImportExportManager {
      * @throws \Exception if the zip file couldn't be read
      */
     public function import($path) {
-        $zip = new ZipArchive();
+        if(!file_exists($path)) {
+            throw new FileNotFoundException($path . ' not found');
+        }
+        $strategy = new PHPZipImportStrategy($path);
 
-        $this->workWithZipFile($path, 0, function(ZipArchive $zip) {
-            foreach($this->workers as $worker) {
-                $worker->import($zip);
-            }
-        });
-    }
-
-    /**
-     * Works with the contents of a zip file.
-     *
-     * @param          $path
-     * @param          $flags
-     * @param callable $callback
-     * @throws \Exception if the zip file failed to open or close
-     */
-    protected function workWithZipFile($path, $flags, callable $callback) {
-        $zip = new ZipArchive();
-        if($zip->open($path, $flags)) {
-            $callback($zip);
-            if(!$zip->close()) {
-                throw new Exception("Failed To Close Zip File");
-            }
-        } else {
-            throw new Exception("Failed to Open Zip File");
+        foreach($this->workers as $worker) {
+            $worker->import($strategy);
         }
     }
 

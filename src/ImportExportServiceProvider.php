@@ -5,6 +5,9 @@ namespace OxygenModule\ImportExport;
 use Oxygen\Core\Blueprint\BlueprintManager;
 use Oxygen\Data\BaseServiceProvider;
 use OxygenModule\ImportExport\Database\DatabaseManager;
+use OxygenModule\ImportExport\Database\DatabaseWorker;
+use OxygenModule\ImportExport\Console\BackupCommand;
+use OxygenModule\ImportExport\Console\BackupImportCommand;
 
 class ImportExportServiceProvider extends BaseServiceProvider {
 
@@ -29,7 +32,10 @@ class ImportExportServiceProvider extends BaseServiceProvider {
             __DIR__ . '/../resources/lang' => base_path('resources/lang/vendor/oxygen/mod-import-export'),
             __DIR__ . '/../resources/views' => base_path('resources/views/vendor/oxygen/mod-import-export'),
             __DIR__ . '/../config/config.php' => config_path('oxygen/mod-import-export.php')
-        ]);
+		]);
+
+		$this->commands(BackupCommand::class);
+		$this->commands(BackupImportCommand::class);
 
         $this->app['router']->middleware('oxygen.deleteTemporaryFiles', DeleteTemporaryFilesMiddleware::class);
 
@@ -45,7 +51,7 @@ class ImportExportServiceProvider extends BaseServiceProvider {
 	public function register() {
         $this->app->singleton(ImportExportManager::class, function($app) {
             $manager = new ImportExportManager($app['config'], $app, $app['env']);
-            $manager->addWorker(new DatabaseWorker($app['config'], $app[DatabaseManager::class]));
+            $manager->addWorker($app[DatabaseWorker::class]);
             return $manager;
         });
     }

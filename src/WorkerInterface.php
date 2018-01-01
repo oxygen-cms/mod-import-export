@@ -3,31 +3,30 @@
 namespace OxygenModule\ImportExport;
 
 use ZipArchive;
+use OxygenModule\ImportExport\Strategy\ExportStrategy;
+use OxygenModule\ImportExport\Strategy\ImportStrategy;
 
 interface WorkerInterface {
 
     /**
-     * Returns an array of files to add to the archive.
+     * Adds files to the backup.
      *
-     * @param string $backupKey
-     * @return mixed
+     * @param Strategy $strategy
      * @throws \Exception if the files could not be loaded or generated
      */
-    public function export($backupKey);
+    public function export(ExportStrategy $strategy);
 
     /**
      * Cleans up any temporary files that were created after they have been added to the ZIP archive.
      *
-     * @param string $backupKey
+     * @param Strategy $strategy
      * @return void
      */
-    public function postExport($backupKey);
+    public function postExport(ExportStrategy $strategy);
 
     /**
-     * Imports content from a zip file
-     *
-     * @param \ZipArchive $zip
+     * Imports content from the backup.
      */
-    public function import(ZipArchive $zip);
+    public function import(ImportStrategy $strategy);
 
-} 
+}

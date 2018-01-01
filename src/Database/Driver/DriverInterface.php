@@ -6,21 +6,21 @@ interface DriverInterface
 {
 	/**
 	 * Create a database dump
-	 * 
-	 * @return boolean
+	 *
+	 * @throws \Symfony\Component\Process\ProcessFailedException if the dump failed
 	 */
 	public function dump($destinationFile);
 
 	/**
 	 * Restore a database dump
-	 * 
-	 * @return boolean
+	 *
+	 * @throws \Symfony\Component\Process\ProcessFailedException if the restore failed
 	 */
 	public function restore($sourceFile);
 
 	/**
 	 * Return the file extension of a dump file (sql, ...)
-	 * 
+	 *
 	 * @return string
 	 */
 	public function getFileExtension();

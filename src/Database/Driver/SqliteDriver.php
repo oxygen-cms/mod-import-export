@@ -2,7 +2,7 @@
 
 namespace OxygenModule\ImportExport\Database\Driver;
 
-use OxygenModule\ImportExport\Database\Console;
+use OxygenModule\ImportExport\Console;
 
 class SqliteDriver implements DriverInterface {
 	protected $console;
@@ -19,7 +19,7 @@ class SqliteDriver implements DriverInterface {
 			escapeshellarg($destinationFile)
 		);
 
-		return $this->console->run($command);
+		$this->console->run($command);
 	}
 
 	public function restore($sourceFile) {
@@ -28,7 +28,7 @@ class SqliteDriver implements DriverInterface {
 			escapeshellarg($this->databaseFile)
 		);
 
-		return $this->console->run($command);
+		$this->console->run($command);
 	}
 
 	public function getFileExtension() {

@@ -2,7 +2,7 @@
 
 namespace OxygenModule\ImportExport\Database\Driver;
 
-use OxygenModule\ImportExport\Database\Console;
+use OxygenModule\ImportExport\Console;
 
 class PostgresDriver implements DriverInterface {
 	protected $console;
@@ -28,7 +28,7 @@ class PostgresDriver implements DriverInterface {
 			escapeshellarg($destinationFile)
 		);
 
-		return $this->console->run($command);
+		$this->console->run($command);
 	}
 
 	public function restore($sourceFile) {
@@ -40,7 +40,7 @@ class PostgresDriver implements DriverInterface {
 			escapeshellarg($sourceFile)
 		);
 
-		return $this->console->run($command);
+		$this->console->run($command);
 	}
 
 	public function getFileExtension() {

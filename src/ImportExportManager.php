@@ -10,6 +10,7 @@ use OxygenModule\ImportExport\Strategy\SystemZipStrategy;
 use OxygenModule\ImportExport\Strategy\PHPZipImportStrategy;
 use OxygenModule\ImportExport\Strategy\DuplicityStrategy;
 use OxygenModule\ImportExport\Strategy\PHPZipExportStrategy;
+use OxygenModule\ImportExport\Strategy\ExportStrategy;
 
 class ImportExportManager {
 
@@ -42,12 +43,9 @@ class ImportExportManager {
      *
      * @param \Illuminate\Contracts\Config\Repository $config
      * @param \Illuminate\Foundation\Application      $app
-     * @param \OxygenModule\ImportExport\Strategy     $strategy
-     * @param string                                  $environment
      */
-
-    public function __construct(Repository $config, Application $app, $environment) {
-        $this->environment = $environment;
+    public function __construct(Repository $config, Application $app) {
+        $this->environment = $app->environment();
         $this->config = $config;
         $this->app = $app;
         $this->temporaryFilesToDelete = [];
@@ -64,30 +62,19 @@ class ImportExportManager {
     }
 
     /**
-     * Returns a key for the backup.
-     *
-     * @return string
-     */
-
-    public function getBackupKey() {
-        return $this->environment . '-' . date('y-m-d');
-    }
-
-    /**
      * Makes a backup of the system.
      *
-     * @return string
+     * @param ExportStrategy $strategy
      * @throws Exception
      */
-    public function export() {
-        $key = $this->getBackupKey();
+    public function export(ExportStrategy $strategy) {
         $folder = $this->config->get('oxygen.mod-import-export.path');
         if(!file_exists($folder)) {
             mkdir($folder);
         }
-        $name = $folder . $key;
+        $path = $folder . $this->environment;
 
-        $strategy = new PHPZipExportStrategy($key, $name);
+        $strategy->create($path);
 
         foreach($this->workers as $worker) {
             $worker->export($strategy);
@@ -104,8 +91,6 @@ class ImportExportManager {
         foreach($this->workers as $worker) {
             $worker->postExport($strategy);
         }
-
-        return $name . '.zip';
     }
 
     /**

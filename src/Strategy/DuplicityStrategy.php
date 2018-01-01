@@ -9,12 +9,14 @@ use Symfony\Component\Process\Exception\ProcessFailedException;
 class DuplicityStrategy implements ExportStrategy {
 
     /**
-     * Constructs a new PHPZipStrategy
+     * Constructs a new DuplicityStrategy
      */
-    public function __construct($key, $path) {
-        $this->key = $key;
-        $this->path = $path;
+    public function __construct() {
         $this->files = [];
+    }
+
+    public function create($path) {
+        $this->path = $path;
     }
 
     /**
@@ -67,9 +69,13 @@ class DuplicityStrategy implements ExportStrategy {
         }
     }
 
-
-    public function getKey() {
-        return $this->key;
+    /**
+     * Returns the path to a backup file which can be downloaded.
+     *
+     * @return string
+     */
+    public function getDownloadableFile() {
+        return null;
     }
 
 }

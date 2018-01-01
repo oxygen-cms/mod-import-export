@@ -5,6 +5,9 @@ namespace OxygenModule\ImportExport\Console;
 use Illuminate\Console\Command;
 use Illuminate\Contracts\Config\Repository;
 use OxygenModule\ImportExport\ImportExportManager;
+use OxygenModule\ImportExport\Strategy\DuplicityStrategy;
+use OxygenModule\ImportExport\Strategy\PHPZipExportStrategy;
+use OxygenModule\ImportExport\Strategy\SystemZipStrategy;
 
 class BackupCommand extends Command
 {
@@ -14,7 +17,7 @@ class BackupCommand extends Command
      *
      * @var string
      */
-    protected $signature = 'backup:make';
+    protected $signature = 'backup:make {--strategy=php-zip : One of `php-zip`, `system-zip`, or `duplicity` }';
 
     /**
      * The console command description.
@@ -32,9 +35,30 @@ class BackupCommand extends Command
     public function handle(ImportExportManager $manager) {
         $this->info('Creating backup...');
 
-        $path = $manager->export();
+        switch($this->option('strategy')) {
+            case 'php-zip':
+                $strategy = new PHPZipExportStrategy();
+                break;
+            case 'system-zip':
+                $strategy = new SystemZipStrategy();
+                break;
+            case 'duplicity':
+                $strategy = new DuplicityStrategy();
+                break;
+            default:
+                $this->error('unknown value for option --strategy');
+                return;
+        }
 
-        $this->info('Backup created at ' . $path);
+        $manager->export($strategy);
+
+        $at = $strategy->getDownloadableFile();
+        if($at == null) {
+            $this->info('Backup did not create a single, downloadable file');
+        } else {
+            $this->info('Backup created at ' . $at);
+        }
+
     }
 
 }

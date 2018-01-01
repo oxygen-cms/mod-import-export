@@ -16,6 +16,7 @@ use Validator;
 use Oxygen\Core\Blueprint\BlueprintManager;
 use Oxygen\Core\Http\Notification;
 use Oxygen\Core\Controller\BlueprintController;
+use OxygenModule\ImportExport\Strategy\PHPZipExportStrategy;
 
 class ImportExportController extends BlueprintController {
 
@@ -48,7 +49,9 @@ class ImportExportController extends BlueprintController {
      */
     public function getExport(ImportExportManager $manager) {
         try {
-            return Response::download($manager->export());
+            $strategy = new PHPZipExportStrategy();
+            $manager->export($strategy);
+            return Response::download($strategy->getDownloadableFile());
         } catch(Exception $e) {
             return Response::notification(new Notification(Lang::get('oxygen/mod-import-export::messages.backupFailed'), Notification::FAILED));
         }

@@ -4,16 +4,22 @@ namespace OxygenModule\ImportExport\Strategy;
 
 use Illuminate\Contracts\Filesystem\FileNotFoundException;
 use Symfony\Component\Process\Process;
+use File;
 
 class SystemZipStrategy implements ExportStrategy {
 
     /**
-     * Constructs a new PHPZipStrategy
+     * Constructs a new SystemZipStrategy
      */
-    public function __construct($key, $path) {
-        $this->key = $key;
-        $this->path = $path . '.zip';
+    public function __construct() {
         $this->files = [];
+    }
+
+    public function create($folder) {
+        $this->path = $folder . '/' . date('y-m-d-H-i-s') . '.zip';
+        if(!File::exists($folder)) {
+            File::makeDirectory($folder, 0755, true);
+        }
     }
 
     /**
@@ -64,8 +70,13 @@ class SystemZipStrategy implements ExportStrategy {
         }
     }
 
-    public function getKey() {
-        return $this->key;
+    /**
+     * Returns the path to a backup file which can be downloaded.
+     *
+     * @return string
+     */
+    public function getDownloadableFile() {
+        return $this->path;
     }
 
 }

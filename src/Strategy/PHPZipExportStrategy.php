@@ -2,17 +2,23 @@
 
 namespace OxygenModule\ImportExport\Strategy;
 
+use File;
 use ZipArchive;
 
 class PHPZipExportStrategy implements ExportStrategy {
 
     /**
-     * Constructs a new PHPZipStrategy
+     * Constructs a new PHPZipExportStrategy
      */
-    public function __construct($key, $path) {
-        $this->key = $key;
-        $this->path = $path . '.zip';
+    public function __construct() {
         $this->zip = new ZipArchive();
+    }
+
+    public function create($folder) {
+        $this->path = $folder . '/' . date('y-m-d-H-i-s') . '.zip';
+        if(!File::exists($folder)) {
+            File::makeDirectory($folder, 0755, true);
+        }
         if(!$this->zip->open($this->path, ZipArchive::CREATE)) {
             throw new Exception("Failed to create Zip file");
         }
@@ -47,8 +53,13 @@ class PHPZipExportStrategy implements ExportStrategy {
         }
     }
 
-    public function getKey() {
-        return $this->key;
+    /**
+     * Returns the path to a backup file which can be downloaded.
+     *
+     * @return string
+     */
+    public function getDownloadableFile() {
+        return $this->path;
     }
 
 }

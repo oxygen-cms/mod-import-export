@@ -50,7 +50,7 @@ class ImportExportServiceProvider extends BaseServiceProvider {
 
 	public function register() {
         $this->app->singleton(ImportExportManager::class, function($app) {
-            $manager = new ImportExportManager($app['config'], $app, $app['env']);
+            $manager = new ImportExportManager($app['config'], $app);
             $manager->addWorker($app[DatabaseWorker::class]);
             return $manager;
         });

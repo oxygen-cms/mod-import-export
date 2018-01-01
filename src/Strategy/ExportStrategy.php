@@ -13,14 +13,20 @@ interface ExportStrategy {
     public function addFile($path, $relativeToDir);
 
     /**
-     * Returns the key identifying this particular backup.
-     * @return string
+     * Starts creating a backup under the specified path.
      */
-    public function getKey();
+    public function create($path);
 
     /**
      * Commits the changes, actually performing the operations.
      */
     public function commit();
+
+    /**
+     * Returns the path to a backup file which can be downloaded.
+     *
+     * @return string
+     */
+    public function getDownloadableFile();
 
 }

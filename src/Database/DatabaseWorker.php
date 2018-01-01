@@ -54,7 +54,7 @@ class DatabaseWorker implements WorkerInterface {
 
     protected function getFilename(ExportStrategy $strategy) {
         return $this->config->get('oxygen.mod-import-export.path')
-             . $strategy->getKey()
+             . app()->environment()
              . '.'
              . $this->database->getFileExtension();
     }

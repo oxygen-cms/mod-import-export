@@ -49,6 +49,9 @@ class ImportExportController extends BlueprintController {
      */
     public function getExport(ImportExportManager $manager) {
         try {
+            /// this process could take longer than usual, so we'll give it more time to run
+            set_time_limit(1000);
+
             $strategy = new PHPZipExportStrategy();
             $manager->export($strategy);
             return Response::download($strategy->getDownloadableFile());

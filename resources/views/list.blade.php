@@ -12,7 +12,7 @@ use Oxygen\Core\Html\Toolbar\SubmitToolbarItem;
 
 $header = Header::fromBlueprint(
         $blueprint,
-        Lang::get('oxygen/mod-import-export::ui.title')
+        __('oxygen/mod-import-export::ui.title')
     );
 
 ?>
@@ -48,11 +48,11 @@ $header = Header::fromBlueprint(
             $form->setUseMultipartFormData(true);
             $form->setAsynchronous(true);
 
-            $form->addContent(View::make('oxygen/mod-import-export::importUploadForm', ['blueprint' => $blueprint, 'toolbarItem' => $toolbarItem]));
+            $form->addContent(view('oxygen/mod-import-export::importUploadForm', ['blueprint' => $blueprint, 'toolbarItem' => $toolbarItem]));
 
             $footer = new Row([
-                new ButtonToolbarItem(Lang::get('oxygen/crud::ui.close'), $blueprint->getAction('getList')),
-                new SubmitToolbarItem(Lang::get('oxygen/mod-import-export::ui.import'))
+                new ButtonToolbarItem(__('oxygen/crud::ui.close'), $blueprint->getAction('getList')),
+                new SubmitToolbarItem(__('oxygen/mod-import-export::ui.import'))
             ]);
             $footer->isFooter = true;
             $form->addContent($footer);

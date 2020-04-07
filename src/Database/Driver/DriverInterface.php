@@ -2,19 +2,21 @@
 
 namespace OxygenModule\ImportExport\Database\Driver;
 
+use Symfony\Component\Process\Exception\ProcessFailedException;
+
 interface DriverInterface
 {
 	/**
 	 * Create a database dump
 	 *
-	 * @throws \Symfony\Component\Process\ProcessFailedException if the dump failed
+	 * @throws ProcessFailedException if the dump failed
 	 */
 	public function dump($destinationFile);
 
 	/**
 	 * Restore a database dump
 	 *
-	 * @throws \Symfony\Component\Process\ProcessFailedException if the restore failed
+	 * @throws ProcessFailedException if the restore failed
 	 */
 	public function restore($sourceFile);
 

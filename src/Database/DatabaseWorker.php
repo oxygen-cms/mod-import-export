@@ -11,11 +11,29 @@ use OxygenModule\ImportExport\Console;
 
 class DatabaseWorker implements WorkerInterface {
 
+    /**
+     * @var Repository
+     */
+    private $config;
+    /**
+     * @var Filesystem
+     */
+    private $files;
+
+    /**
+     * @var Console
+     */
+    private $console;
+
+    /**
+     * @var Driver\MySQLDriver|Driver\PostgresDriver|Driver\SqliteDriver
+     */
+    private $database;
+
     public function __construct(Repository $config, Filesystem $filesystem, $database = null) {
         $this->config = $config;
         $this->files = $filesystem;
         $this->console = new Console();
-        $this->filename =
         $this->database = $this->getDatabase($database);
     }
 
@@ -23,7 +41,7 @@ class DatabaseWorker implements WorkerInterface {
      * Returns an array of files to add to the archive.
      *
      * @param ExportStrategy $strategy
-     * @throws Exception if the database failed to backup
+     * @throws DatabaseDumpException
      */
     public function export(ExportStrategy $strategy) {
         $filename = $this->getFilename($strategy);
@@ -62,7 +80,8 @@ class DatabaseWorker implements WorkerInterface {
     /**
      * Cleans up any temporary files that were created after they have been added to the ZIP archive.
      *
-     * @param ImportStrategy $zip
+     * @param ImportStrategy $strategy
+     * @throws DatabaseRestoreException
      */
     public function import(ImportStrategy $strategy) {
         $files = $strategy->getFiles();
@@ -86,13 +105,23 @@ class DatabaseWorker implements WorkerInterface {
         }
     }
 
+    /**
+     * @param mixed $database
+     * @return Driver\MySQLDriver|Driver\PostgresDriver|Driver\SqliteDriver
+     * @throws \Exception if the driver is not supported yet
+     */
     protected function getDatabase($database) {
-        $database = $database ? : $this->config->get('database.default');
+        $database = $database ? $database : $this->config->get('database.default');
         $realConfig = $this->config->get('database.connections.' . $database);
 
         return $this->getDatabaseDriver($realConfig);
     }
 
+    /**
+     * @param array $config
+     * @return Driver\MySQLDriver|Driver\PostgresDriver|Driver\SqliteDriver
+     * @throws \Exception if the driver is not supported yet
+     */
     protected function getDatabaseDriver(array $config) {
         switch ($config['driver']) {
             case 'mysql':

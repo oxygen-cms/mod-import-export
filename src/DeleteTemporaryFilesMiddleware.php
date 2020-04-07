@@ -4,10 +4,9 @@
 namespace OxygenModule\ImportExport;
 
 use Closure;
-use Illuminate\Contracts\Routing\TerminableMiddleware;
 use Illuminate\Foundation\Application;
 
-class DeleteTemporaryFilesMiddleware implements TerminableMiddleware {
+class DeleteTemporaryFilesMiddleware {
 
     /**
      * @var \Illuminate\Foundation\Application

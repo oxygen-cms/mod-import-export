@@ -4,9 +4,19 @@ namespace OxygenModule\ImportExport\Strategy;
 
 use Illuminate\Contracts\Filesystem\FileNotFoundException;
 use Symfony\Component\Process\Process;
-use File;
+use Illuminate\Support\Facades\File;
+use Exception;
+use Illuminate\Support\Str;
 
 class SystemZipStrategy implements ExportStrategy {
+    /**
+     * @var array
+     */
+    private $files;
+    /**
+     * @var string
+     */
+    private $path;
 
     /**
      * Constructs a new SystemZipStrategy
@@ -26,8 +36,8 @@ class SystemZipStrategy implements ExportStrategy {
      * Returns an array of files to add to the backup.
      *
      * @param string $path the path to add
-     * @param string $internalPath where it should be placed inside the `.zip`
-     * @throws \Exception if the files could not be added
+     * @param string $relativeToDir where it should be placed inside the `.zip`
+     * @throws Exception if the files could not be added
      */
     public function addFile($path, $relativeToDir) {
         if(!file_exists($path)) {
@@ -44,14 +54,17 @@ class SystemZipStrategy implements ExportStrategy {
         $this->files[$relativeToDir][] = $path;
     }
 
+    /**
+     * @throws Exception
+     */
     public function commit() {
         foreach($this->files as $relativeToDir => $files) {
             $list = '';
 
             foreach($files as $file) {
                 // turn this into a relative path
-                if(!starts_with($file, $relativeToDir)) {
-                    throw new \Exception($file . ' is not inside ' . $relativeToDir);
+                if(!Str::startsWith($file, $relativeToDir)) {
+                    throw new Exception($file . ' is not inside ' . $relativeToDir);
                 }
                 $file = substr($file, strlen($relativeToDir));
                 $list .= escapeshellarg($file) . ' ';

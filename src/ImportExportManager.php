@@ -96,8 +96,8 @@ class ImportExportManager {
     /**
      * Imports content from the ZIP file at the given path.
      *
-     * @param $path
-     * @throws \Exception if the zip file couldn't be read
+     * @param string $path
+     * @throws FileNotFoundException if the zip file couldn't be read
      */
     public function import($path) {
         if(!file_exists($path)) {

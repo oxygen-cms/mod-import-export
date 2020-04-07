@@ -10,14 +10,15 @@
     "authors": [
         {
             "name": "Chris Chamberlain",
-            "email": "c.chamberlain@iinet.net.au"
+            "email": "chris@chamberlain.id.au"
         }
     ],
     "require": {
-        "php": ">=5.5.9",
-        "oxygen/core": "~0.5.0",
-        "oxygen/crud": "~0.4.0",
-        "illuminate/support": "~5.1.0"
+        "php": ">=7.2.0",
+        "oxygen/core": "~0.6.0",
+        "oxygen/crud": "~0.5.0",
+        "illuminate/support": "~6.0",
+        "ext-zip": "^1.15"
     },
     "autoload": {
         "psr-4": {
@@ -27,8 +28,6 @@
     "minimum-stability": "stable",
     "extra": {
         "title": "Oxygen Module - Import/Export",
-        "readme": "oxygen.md",
-        "changes": "changes.md",
         "providers": [
             {
                 "name": "Import/Export",
@@ -36,5 +35,8 @@
                 "description": "Import/Export Content"
             }
         ]
+    },
+    "require-dev": {
+        "phpstan/phpstan": "^0.12.18"
     }
 }

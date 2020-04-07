@@ -3,7 +3,7 @@
 use Oxygen\Core\Http\Method;
 use OxygenModule\ImportExport\Controller\ImportExportController;
 
-Blueprint::make('ImportExport', function($blueprint) {
+Blueprint::make('ImportExport', function(Oxygen\Core\Blueprint\Blueprint $blueprint) {
     $blueprint->setController(ImportExportController::class);
     $blueprint->setDisplayName('Import/Export');
     $blueprint->disablePluralForm();

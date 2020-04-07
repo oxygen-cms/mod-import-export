@@ -2,10 +2,22 @@
 
 namespace OxygenModule\ImportExport\Strategy;
 
-use File;
+use Illuminate\Support\Facades\File;
 use ZipArchive;
+use Illuminate\Contracts\Filesystem\FileNotFoundException;
+use Exception;
+use Illuminate\Support\Str;
 
 class PHPZipExportStrategy implements ExportStrategy {
+    /**
+     * @var ZipArchive
+     */
+    private $zip;
+
+    /**
+     * @var string
+     */
+    private $path;
 
     /**
      * Constructs a new PHPZipExportStrategy
@@ -14,6 +26,10 @@ class PHPZipExportStrategy implements ExportStrategy {
         $this->zip = new ZipArchive();
     }
 
+    /**
+     * @param string $folder
+     * @throws Exception
+     */
     public function create($folder) {
         $this->path = $folder . '/' . date('y-m-d-H-i-s') . '.zip';
         if(!File::exists($folder)) {
@@ -24,6 +40,9 @@ class PHPZipExportStrategy implements ExportStrategy {
         }
     }
 
+    /**
+     * @throws Exception
+     */
     public function commit() {
         if(!$this->zip->close()) {
             throw new Exception("Failed To close Zip file");
@@ -34,8 +53,8 @@ class PHPZipExportStrategy implements ExportStrategy {
      * Returns an array of files to add to the backup.
      *
      * @param string $path the path to add
-     * @param string $internalPath where it should be placed inside the `.zip`
-     * @throws \Exception if the files could not be added
+     * @param string $relativeToDir where it should be placed inside the `.zip`
+     * @throws Exception if the files could not be added
      */
     public function addFile($path, $relativeToDir) {
         if(!file_exists($path)) {
@@ -43,8 +62,8 @@ class PHPZipExportStrategy implements ExportStrategy {
         }
 
         // turn this into a relative path
-        if(!starts_with($path, $relativeToDir)) {
-            throw new \Exception($path . ' is not inside ' . $relativeToDir);
+        if(!Str::startsWith($path, $relativeToDir)) {
+            throw new Exception($path . ' is not inside ' . $relativeToDir);
         }
         $relativePath = substr($path, strlen($relativeToDir));
 

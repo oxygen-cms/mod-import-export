@@ -5,8 +5,18 @@ namespace OxygenModule\ImportExport\Strategy;
 use Illuminate\Contracts\Filesystem\FileNotFoundException;
 use Symfony\Component\Process\Process;
 use Symfony\Component\Process\Exception\ProcessFailedException;
+use Illuminate\Support\Str;
 
 class DuplicityStrategy implements ExportStrategy {
+    /**
+     * @var array
+     */
+    private $files;
+    
+    /**
+     * @var string
+     */
+    private $path;
 
     /**
      * Constructs a new DuplicityStrategy
@@ -23,7 +33,7 @@ class DuplicityStrategy implements ExportStrategy {
      * Returns an array of files to add to the backup.
      *
      * @param string $path the path to add
-     * @param string $internalPath where it should be placed inside the `.zip`
+     * @param string $relativeToDir where it should be placed inside the `.zip`
      * @throws \Exception if the files could not be added
      */
     public function addFile($path, $relativeToDir) {
@@ -41,13 +51,16 @@ class DuplicityStrategy implements ExportStrategy {
         $this->files[$relativeToDir][] = $path;
     }
 
+    /**
+     * @throws \Exception
+     */
     public function commit() {
         $list = '';
         $base = rtrim(base_path(), '/') . '/';
         foreach($this->files as $relativeToDir => $files) {
             foreach($files as $file) {
                 // turn this into a relative path
-                if(!starts_with($file, $base)) {
+                if(!Str::startsWith($file, $base)) {
                     throw new \Exception($file . ' is not inside ' . $base);
                 }
                 //$file = substr($file, strlen($base));
@@ -72,7 +85,7 @@ class DuplicityStrategy implements ExportStrategy {
     /**
      * Returns the path to a backup file which can be downloaded.
      *
-     * @return string
+     * @return string|null
      */
     public function getDownloadableFile() {
         return null;

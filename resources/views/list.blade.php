@@ -6,28 +6,22 @@
 
 use Oxygen\Core\Html\Form\Form;
 use Oxygen\Core\Html\Form\Row;
-use Oxygen\Core\Html\Header\Header;
 use Oxygen\Core\Html\Toolbar\ButtonToolbarItem;
 use Oxygen\Core\Html\Toolbar\SubmitToolbarItem;
 
-$header = Header::fromBlueprint(
-        $blueprint,
-        __('oxygen/mod-import-export::ui.title')
-    );
-
 ?>
-
-<div class="Block">
-    {!! $header->render() !!}
-</div>
 
 <?php
     $toolbarItem = $blueprint->getToolbarItem('getExport');
     if($toolbarItem->shouldRender()):
 ?>
     <div class="Block">
+        <div class="Header Header--main">
+            <div class="Header-title heading-beta">
+                Export
+            </div>
+        </div>
         <div class="Row--visual">
-            <h2 class="heading-gamma">Export</h2>
             {!! $toolbarItem->render(['margin' => 'vertical']) !!}
             <p>
                 Creates a backup of all the content on the website, including the entire database and media files.<br>
@@ -38,6 +32,7 @@ $header = Header::fromBlueprint(
 <?php
     endif;
 ?>
+
 <?php
     $toolbarItem = $blueprint->getToolbarItem('postImport');
     if($toolbarItem->shouldRender()):
@@ -59,9 +54,9 @@ $header = Header::fromBlueprint(
 
             echo $form->render();
         ?>
-    <?php
-        endif;
-    ?>
-</div>
+    </div>
+<?php
+    endif;
+?>
 
 @stop

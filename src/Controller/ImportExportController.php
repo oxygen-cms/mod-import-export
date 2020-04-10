@@ -56,6 +56,7 @@ class ImportExportController extends BlueprintController {
             $manager->export($strategy);
             return response()->download($strategy->getDownloadableFile());
         } catch(Exception $e) {
+            logger()->error($e->getMessage(), ['exception' => $e]);
             return notify(new Notification(__('oxygen/mod-import-export::messages.backupFailed'), Notification::FAILED));
         }
     }

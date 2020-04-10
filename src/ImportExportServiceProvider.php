@@ -37,8 +37,6 @@ class ImportExportServiceProvider extends BaseServiceProvider {
 		$this->commands(BackupCommand::class);
 		$this->commands(BackupImportCommand::class);
 
-        $this->app['router']->middleware('oxygen.deleteTemporaryFiles', DeleteTemporaryFilesMiddleware::class);
-
         $this->app[BlueprintManager::class]->loadDirectory(__DIR__ . '/../resources/blueprints');
 	}
 

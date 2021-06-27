@@ -26,7 +26,7 @@ class MySQLDriver implements DriverInterface {
 	}
 
 	public function dump($destinationFile) {
-		$command = sprintf('%smysqldump --user=%s --password=%s --host=%s --port=%s %s > %s',
+		$command = sprintf('%smysqldump --no-create-info --user=%s --password=%s --host=%s --port=%s %s > %s',
 			$this->dumpCommandPath,
 			escapeshellarg($this->user),
 			escapeshellarg($this->password),

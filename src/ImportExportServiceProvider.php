@@ -8,6 +8,8 @@ use OxygenModule\ImportExport\Database\DatabaseManager;
 use OxygenModule\ImportExport\Database\DatabaseWorker;
 use OxygenModule\ImportExport\Console\BackupCommand;
 use OxygenModule\ImportExport\Console\BackupImportCommand;
+use OxygenModule\ImportExport\Strategy\PHPZipExportStrategy;
+use OxygenModule\ImportExport\Strategy\PHPZipImportStrategy;
 
 class ImportExportServiceProvider extends BaseServiceProvider {
 
@@ -48,7 +50,7 @@ class ImportExportServiceProvider extends BaseServiceProvider {
 
 	public function register() {
         $this->app->singleton(ImportExportManager::class, function($app) {
-            $manager = new ImportExportManager($app['config'], $app);
+            $manager = new ImportExportManager($app['config'], $app, new PHPZipImportStrategy(), new PHPZipExportStrategy());
             $manager->addWorker($app[DatabaseWorker::class]);
             return $manager;
         });

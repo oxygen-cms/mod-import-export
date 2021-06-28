@@ -3,33 +3,34 @@
 namespace OxygenModule\ImportExport;
 
 use Exception;
-use OxygenModule\ImportExport\Strategy\ExportStrategy;
-use OxygenModule\ImportExport\Strategy\ImportStrategy;
+use RecursiveIteratorIterator;
+use Symfony\Component\Console\Output\OutputInterface;
 
 interface WorkerInterface {
 
     /**
      * Adds files to the backup.
      *
-     * @param ExportStrategy $strategy
+     * @param OutputInterface $output
+     * @return array of file paths to export (format: "local/path" => "global/path" )
      * @throws Exception if the files could not be loaded or generated
-     * @return void
      */
-    public function export(ExportStrategy $strategy);
+    public function export(OutputInterface $output): array;
 
     /**
      * Cleans up any temporary files that were created after they have been added to the ZIP archive.
      *
-     * @param ExportStrategy $strategy
+     * @param OutputInterface $output
      * @return void
      */
-    public function postExport(ExportStrategy $strategy);
+    public function postExport(OutputInterface $output);
 
     /**
      * Imports content from the backup.
-     * @param ImportStrategy $strategy
+     * @param RecursiveIteratorIterator $files
+     * @param OutputInterface $output
      * @return void
      */
-    public function import(ImportStrategy $strategy);
+    public function import(\RecursiveIteratorIterator $files, OutputInterface $output);
 
 }

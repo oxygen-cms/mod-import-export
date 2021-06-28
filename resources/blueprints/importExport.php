@@ -25,7 +25,6 @@ Blueprint::make('ImportExport', function(Oxygen\Core\Blueprint\Blueprint $bluepr
     $blueprint->makeAction([
         'name'        => 'getExport',
         'pattern'     => 'export',
-        'middleware'  => [\OxygenModule\ImportExport\DeleteTemporaryFilesMiddleware::class],
         'useSmoothState' => false
     ]);
     $blueprint->makeToolbarItem([

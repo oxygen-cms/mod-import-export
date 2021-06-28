@@ -2,12 +2,13 @@
 
 namespace OxygenModule\ImportExport\Database;
 
+use Exception;
 use Illuminate\Config\Repository;
 use Illuminate\Filesystem\Filesystem;
-use OxygenModule\ImportExport\Strategy\ExportStrategy;
-use OxygenModule\ImportExport\Strategy\ImportStrategy;
 use OxygenModule\ImportExport\WorkerInterface;
-use OxygenModule\ImportExport\Console;
+use OxygenModule\ImportExport\CommandRunner;
+use RecursiveIteratorIterator;
+use Symfony\Component\Console\Output\OutputInterface;
 
 class DatabaseWorker implements WorkerInterface {
 
@@ -15,46 +16,52 @@ class DatabaseWorker implements WorkerInterface {
      * @var Repository
      */
     private $config;
+
     /**
      * @var Filesystem
      */
     private $files;
 
     /**
-     * @var Console
+     * @var CommandRunner
      */
-    private $console;
+    private $commandRunner;
 
     /**
-     * @var Driver\MySQLDriver|Driver\PostgresDriver|Driver\SqliteDriver
+     * @var Driver\MySQLDriver|Driver\PostgresDriver
      */
     private $database;
 
+    /**
+     * @param Repository $config
+     * @param Filesystem $filesystem
+     * @param null $database
+     * @throws Exception
+     */
     public function __construct(Repository $config, Filesystem $filesystem, $database = null) {
         $this->config = $config;
         $this->files = $filesystem;
-        $this->console = new Console();
+        $this->commandRunner = new CommandRunner();
         $this->database = $this->getDatabase($database);
     }
 
     /**
      * Returns an array of files to add to the archive.
      *
-     * @param ExportStrategy $strategy
-     * @throws DatabaseDumpException
+     * @param OutputInterface $output
+     * @return array
+     * @throws Exception
      */
-    public function export(ExportStrategy $strategy) {
-        $filename = $this->getFilename($strategy);
+    public function export(OutputInterface $output): array {
+        $filename = $this->getFilename();
 
         $this->createDumpFolderIfDoesNotExist($filename);
 
-        try {
-            $this->database->dump($filename);
-        } catch(\Exception $e) {
-            throw new DatabaseDumpException($e);
-        }
+        $this->database->dump($filename, $output);
 
-        $strategy->addFile($filename, dirname($filename));
+        return [
+            basename($filename) => $filename
+        ];
     }
 
     /**
@@ -62,15 +69,15 @@ class DatabaseWorker implements WorkerInterface {
      *
      * @return void
      */
-    public function postExport(ExportStrategy $strategy) {
-        $filename = $this->getFilename($strategy);
+    public function postExport(OutputInterface $output) {
+        $filename = $this->getFilename();
 
         if(file_exists($filename)) {
             unlink($filename);
         }
     }
 
-    protected function getFilename(ExportStrategy $strategy) {
+    protected function getFilename(): string {
         return $this->config->get('oxygen.mod-import-export.path')
              . app()->environment()
              . '.'
@@ -78,13 +85,13 @@ class DatabaseWorker implements WorkerInterface {
     }
 
     /**
-     * Cleans up any temporary files that were created after they have been added to the ZIP archive.
+     * Imports content to the database from a .zip archive.
      *
-     * @param ImportStrategy $strategy
+     * @param RecursiveIteratorIterator $files
+     * @param OutputInterface $output
      * @throws DatabaseRestoreException
      */
-    public function import(ImportStrategy $strategy) {
-        $files = $strategy->getFiles();
+    public function import(RecursiveIteratorIterator $files, OutputInterface $output) {
         foreach ($files as $file) {
             if (
                 !$file->isDir() &&
@@ -92,13 +99,11 @@ class DatabaseWorker implements WorkerInterface {
             ) {
                 $path = $file->getPathname();
 
-                if(app()->runningInConsole()) {
-                    echo 'Importing database file from ' . $path . "\n";
-                }
+                $output->writeln('DatabaseWorker: loading from ' . $path);
 
                 try {
-                    $this->database->restore($path);
-                } catch(\Exception $e) {
+                    $this->database->restore($path, $output);
+                } catch(Exception $e) {
                     throw new DatabaseRestoreException($e);
                 }
             }
@@ -107,8 +112,8 @@ class DatabaseWorker implements WorkerInterface {
 
     /**
      * @param mixed $database
-     * @return Driver\MySQLDriver|Driver\PostgresDriver|Driver\SqliteDriver
-     * @throws \Exception if the driver is not supported yet
+     * @return Driver\MySQLDriver|Driver\PostgresDriver
+     * @throws Exception if the driver is not supported yet
      */
     protected function getDatabase($database) {
         $database = $database ? $database : $this->config->get('database.default');
@@ -119,15 +124,15 @@ class DatabaseWorker implements WorkerInterface {
 
     /**
      * @param array $config
-     * @return Driver\MySQLDriver|Driver\PostgresDriver|Driver\SqliteDriver
-     * @throws \Exception if the driver is not supported yet
+     * @return Driver\MySQLDriver|Driver\PostgresDriver
+     * @throws Exception if the driver is not supported yet
      */
     protected function getDatabaseDriver(array $config) {
         switch ($config['driver']) {
             case 'mysql':
-                $port = isset($config['port']) ? $config['port'] : 3306;
+                $port = $config['port'] ?? 3306;
                 return new Driver\MySQLDriver(
-                    $this->console,
+                    $this->commandRunner,
                     $config['database'],
                     $config['username'],
                     $config['password'],
@@ -137,24 +142,16 @@ class DatabaseWorker implements WorkerInterface {
                     $this->config->get('backup.mysql.restoreCommandPath')
                 );
                 break;
-            case 'sqlite':
-                return new Driver\SqliteDriver(
-                    $this->console,
-                    $config['database']
-                );
-                break;
             case 'pgsql':
                 return new Driver\PostgresDriver(
-                    $this->console,
+                    $this->commandRunner,
                     $config['database'],
                     $config['username'],
                     $config['password'],
                     $config['host']
                 );
-                break;
             default:
-                throw new \Exception('Database driver not supported yet');
-                break;
+                throw new Exception('Database driver not supported yet');
         }
     }
 

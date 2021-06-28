@@ -53,21 +53,15 @@ class PHPZipExportStrategy implements ExportStrategy {
      * Returns an array of files to add to the backup.
      *
      * @param string $path the path to add
-     * @param string $relativeToDir where it should be placed inside the `.zip`
+     * @param string $localPath where it should be placed inside the `.zip`
      * @throws Exception if the files could not be added
      */
-    public function addFile($path, $relativeToDir) {
+    public function addFile(string $path, $localPath) {
         if(!file_exists($path)) {
             throw new FileNotFoundException($path);
         }
 
-        // turn this into a relative path
-        if(!Str::startsWith($path, $relativeToDir)) {
-            throw new Exception($path . ' is not inside ' . $relativeToDir);
-        }
-        $relativePath = substr($path, strlen($relativeToDir));
-
-        if(!$this->zip->addFile($path, $relativePath)) {
+        if(!$this->zip->addFile($path, $localPath)) {
             throw new Exception('Zip failed to add file: ' . $path);
         }
     }
@@ -77,7 +71,7 @@ class PHPZipExportStrategy implements ExportStrategy {
      *
      * @return string
      */
-    public function getDownloadableFile() {
+    public function getDownloadableFile(): string {
         return $this->path;
     }
 

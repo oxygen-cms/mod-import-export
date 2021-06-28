@@ -6,51 +6,39 @@ use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;
 use Exception;
 use Spatie\TemporaryDirectory\TemporaryDirectory;
+use Symfony\Component\Console\Output\OutputInterface;
 use ZipArchive;
 
 class PHPZipImportStrategy implements ImportStrategy {
 
     /**
-     * @var bool
-     */
-    private $extracted;
-
-    /**
-     * @var string
-     */
-    private $path;
-    /**
-     * @var TemporaryDirectory
-     */
-    private $tempDir;
-    /**
      * @var ZipArchive
      */
-    private $zip;
+    private $extractedDirectories = [];
 
     /**
-     * PHPZipImportStrategy constructor.
-     * @param string $path
+     * Returns an iterator over files inside the extracted zip file pointed at by `$path`.
+     *
+     * @param string $path path to the zip file
+     * @param OutputInterface $output write log output
+     * @return RecursiveIteratorIterator
      * @throws Exception
      */
-    public function __construct(string $path) {
-        $this->extracted = false;
-        $this->path = $path;
-        $this->zip = new ZipArchive();
-        if(!$this->zip->open($path, 0)) {
-            throw new Exception("Failed to open zip file");
+    public function getFiles(string $path, OutputInterface $output) {
+        if(!isset($this->extractedDirectories[$path])) {
+            $zip = new ZipArchive();
+            if(!$zip->open($path, 0)) {
+                throw new Exception("Failed to open zip file");
+            }
+            $tempDir = (new TemporaryDirectory())->create();
+            $output->writeln('PHPZipImport: extracting `.zip` to ' . $tempDir->path());
+            if(!$zip->extractTo($tempDir->path())) {
+                throw new Exception("Failed to extract zip file");
+            }
+            $this->extractedDirectories[$path] = $tempDir;
         }
-        $this->tempDir = (new TemporaryDirectory())->create();
-        if(app()->runningInConsole()) {
-            echo 'Extracting `.zip` to ' . $this->tempDir->path() . "\n";
-        }
-        if(!$this->zip->extractTo($this->tempDir->path())) {
-            throw new Exception("Failed to extract zip file");
-        }
-    }
 
-    public function getFiles() {
-        return new RecursiveIteratorIterator(new RecursiveDirectoryIterator($this->tempDir->path()));
+        return new RecursiveIteratorIterator(new RecursiveDirectoryIterator($this->extractedDirectories[$path]->path()));
     }
 
 }

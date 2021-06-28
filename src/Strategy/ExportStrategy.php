@@ -8,9 +8,10 @@ interface ExportStrategy {
      * Returns an array of files to add to the backup.
      *
      * @param string $path the path to add
+     * @param string $localPath where to place the file inside the backup
      * @throws \Exception if the files could not be added
      */
-    public function addFile($path, $relativeToDir);
+    public function addFile(string $path, string $localPath);
 
     /**
      * Starts creating a backup under the specified path.
@@ -27,6 +28,6 @@ interface ExportStrategy {
      *
      * @return string
      */
-    public function getDownloadableFile();
+    public function getDownloadableFile(): string;
 
 }

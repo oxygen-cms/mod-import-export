@@ -3,7 +3,7 @@
 namespace OxygenModule\ImportExport\Console;
 
 use Illuminate\Console\Command;
-use Illuminate\Contracts\Config\Repository;
+use Illuminate\Contracts\Filesystem\FileNotFoundException;
 use OxygenModule\ImportExport\ImportExportManager;
 
 class BackupImportCommand extends Command
@@ -27,11 +27,13 @@ class BackupImportCommand extends Command
      * Execute the console command.
      *
      * @param ImportExportManager $manager
-     * @return mixed
+     * @return void
+     * @throws FileNotFoundException
      */
     public function handle(ImportExportManager $manager) {
         $this->info('Importing backup...');
 
+        $manager->setOutput($this->output);
         $manager->import($this->argument('path'));
 
         $this->info('Successfully imported');

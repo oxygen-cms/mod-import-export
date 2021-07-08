@@ -52,9 +52,8 @@ class ImportExportController extends BlueprintController {
             /// this process could take longer than usual, so we'll give it more time to run
             set_time_limit(1000);
 
-            $strategy = new PHPZipExportStrategy();
-            $manager->export($strategy);
-            return response()->download($strategy->getDownloadableFile());
+            $manager->export();
+            return response()->download($manager->getExportStrategy()->getDownloadableFile());
         } catch(Exception $e) {
             if(config('app.debug')) {
                 throw $e;
@@ -95,7 +94,6 @@ class ImportExportController extends BlueprintController {
         }
 
         if(!$file->isValid()) {
-            $messages = new MessageBag();
             return notify(new Notification(__('oxygen/crud::messages.upload.failed', [
                 'name' => $file->getClientOriginalName(),
                 'error' => $file->getError()
@@ -113,7 +111,7 @@ class ImportExportController extends BlueprintController {
 
         $manager->import($file->getRealPath());
 
-        return notify(new Notification(__('oxygen/mod-import-export::messages.contentImported')), ['refresh' => true, 'hardRedirect' => true]);
+        return notify(new Notification(__('oxygen/mod-import-export::messages.contentImported')));
     }
 
 

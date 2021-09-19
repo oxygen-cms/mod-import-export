@@ -28,14 +28,11 @@
     },
     "minimum-stability": "stable",
     "extra": {
-        "title": "Oxygen Module - Import/Export",
-        "providers": [
-            {
-                "name": "Import/Export",
-                "class": "OxygenModule\\ImportExport\\ImportExportServiceProvider",
-                "description": "Import/Export Content"
-            }
-        ]
+        "laravel": {
+            "providers": [
+                "OxygenModule\\ImportExport\\ImportExportServiceProvider"
+            ]
+        }
     },
     "require-dev": {
         "phpstan/phpstan": "^0.12.18"

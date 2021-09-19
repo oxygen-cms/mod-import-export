@@ -26,9 +26,9 @@ class ImportExportServiceProvider extends BaseServiceProvider {
 	 * @return void
 	 */
 	public function boot() {
-        $this->loadViewsFrom(__DIR__ . '/../resources/views', 'oxygen/mod-import-export');
         $this->loadTranslationsFrom(__DIR__ . '/../resources/lang', 'oxygen/mod-import-export');
         $this->mergeConfigFrom(__DIR__ . '/../config/config.php', 'oxygen.mod-import-export');
+        $this->loadRoutesFrom(__DIR__ . '/../resources/routes.php');
 
         $this->publishes([
             __DIR__ . '/../resources/lang' => base_path('resources/lang/vendor/oxygen/mod-import-export'),
@@ -38,8 +38,6 @@ class ImportExportServiceProvider extends BaseServiceProvider {
 
 		$this->commands(BackupCommand::class);
 		$this->commands(BackupImportCommand::class);
-
-        $this->app[BlueprintManager::class]->loadDirectory(__DIR__ . '/../resources/blueprints');
 	}
 
 	/**

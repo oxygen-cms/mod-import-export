@@ -3,49 +3,26 @@
 namespace OxygenModule\ImportExport\Controller;
 
 use Exception;
-use Illuminate\Http\Request;
-use Illuminate\Support\MessageBag;
-use Illuminate\Validation\Factory;
-use Oxygen\Core\Blueprint\BlueprintNotFoundException;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Routing\Controller;
 use OxygenModule\ImportExport\ImportExportManager;
-use ReflectionException;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
-
-use Oxygen\Core\Blueprint\BlueprintManager;
 use Oxygen\Core\Http\Notification;
-use Oxygen\Core\Controller\BlueprintController;
-use OxygenModule\ImportExport\Strategy\PHPZipExportStrategy;
 
-class ImportExportController extends BlueprintController {
+class ImportExportController extends Controller {
 
     /**
-     * Constructs the AuthController.
-     *
-     * @param BlueprintManager $manager
-     * @throws BlueprintNotFoundException
-     * @throws ReflectionException
+     * Constructs the ImportExportController.
      */
-    public function __construct(BlueprintManager $manager) {
-        parent::__construct($manager->get('ImportExport'));
-    }
-
-    /**
-     * Shows the update form.
-     *
-     * @return \Illuminate\View\View
-     */
-
-    public function getList() {
-        return view('oxygen/mod-import-export::list', [
-            'title' => __('oxygen/mod-import-export::ui.title')
-        ]);
+    public function __construct() {
     }
 
     /**
      * Create a backup of the database/other content and save it as a file.
      *
      * @param ImportExportManager $manager
-     * @return BinaryFileResponse
+     * @return BinaryFileResponse|JsonResponse
+     * @throws Exception
      */
     public function getExport(ImportExportManager $manager) {
         try {
@@ -62,57 +39,5 @@ class ImportExportController extends BlueprintController {
             return notify(new Notification(__('oxygen/mod-import-export::messages.backupFailed'), Notification::FAILED));
         }
     }
-
-    /**
-     * Uploads a backup of the content and restores it.
-     *
-     * @param Request $input
-     * @param ImportExportManager $manager
-     * @param Factory $validationFactory
-     * @return \Illuminate\Http\Response
-     * @throws Exception
-     */
-    public function postImport(Request $input, ImportExportManager $manager, Factory $validationFactory) {
-        // if no file has been uploaded
-        if(!$input->hasFile('file')) {
-            // guess if post_max_size has been reached
-            if (empty($_FILES) && empty($_POST) && isset($_SERVER['REQUEST_METHOD']) && strtolower($_SERVER['REQUEST_METHOD']) == 'post') {
-                $message = __('oxygen/crud::messages.upload.tooLarge');
-            } else {
-                $message = __('oxygen/crud::messages.upload.noFiles');
-            }
-
-            return notify(
-                new Notification($message, Notification::FAILED)
-            );
-        }
-
-        $file = $input->file('file');
-
-        if(is_array($file)) {
-            $file = $file[0];
-        }
-
-        if(!$file->isValid()) {
-            return notify(new Notification(__('oxygen/crud::messages.upload.failed', [
-                'name' => $file->getClientOriginalName(),
-                'error' => $file->getError()
-            ]), Notification::FAILED));
-        }
-
-        $validator = $validationFactory->make(
-            ['file' => $file],
-            ['file' => 'mimes:zip']
-        );
-
-        if($validator->fails()) {
-            return notify(new Notification($validator->messages()->first(), Notification::FAILED));
-        }
-
-        $manager->import($file->getRealPath());
-
-        return notify(new Notification(__('oxygen/mod-import-export::messages.contentImported')));
-    }
-
 
 }

@@ -30,11 +30,8 @@ class PHPZipExportStrategy implements ExportStrategy {
      * @param string $folder
      * @throws Exception
      */
-    public function create($folder) {
+    public function create(string $folder) {
         $this->path = $folder . '/' . date('y-m-d-H-i-s') . '.zip';
-        if(!File::exists($folder)) {
-            File::makeDirectory($folder, 0755, true);
-        }
         if(!$this->zip->open($this->path, ZipArchive::CREATE)) {
             throw new Exception("Failed to create Zip file");
         }
@@ -56,7 +53,7 @@ class PHPZipExportStrategy implements ExportStrategy {
      * @param string $localPath where it should be placed inside the `.zip`
      * @throws Exception if the files could not be added
      */
-    public function addFile(string $path, $localPath) {
+    public function addFile(string $path, string $localPath) {
         if(!file_exists($path)) {
             throw new FileNotFoundException($path);
         }

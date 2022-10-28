@@ -91,6 +91,9 @@ class ImportExportManager {
             mkdir($folder);
         }
         $path = $folder . $this->environment;
+        if(!file_exists($path)) {
+            mkdir($path);
+        }
 
         $this->exportStrategy->create($path);
 

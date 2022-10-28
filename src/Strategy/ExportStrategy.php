@@ -16,7 +16,7 @@ interface ExportStrategy {
     /**
      * Starts creating a backup under the specified path.
      */
-    public function create($path);
+    public function create(string $path);
 
     /**
      * Commits the changes, actually performing the operations.

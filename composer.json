@@ -19,6 +19,7 @@
         "oxygen/crud": "~0.12.0",
         "illuminate/support": "^10.0",
         "ext-zip": "^1.15",
+        "symfony/process": "~6.4.4",
         "spatie/temporary-directory": "^1.3.0"
     },
     "autoload": {
@@ -35,9 +36,9 @@
         }
     },
     "require-dev": {
-        "phpstan/phpstan": "^0.12.18"
+        "phpstan/phpstan": "^1.8"
     },
     "scripts": {
-        "test": "vendor/bin/phpstan analyze src --level 3"
+        "test": "vendor/bin/phpstan analyze src --level 5"
     }
 }

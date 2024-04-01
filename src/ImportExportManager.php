@@ -67,7 +67,10 @@ class ImportExportManager {
      * @param OutputInterface $output
      */
     public function setOutput(OutputInterface $output) {
-        $output->write($this->output->fetch());
+        if($this->output instanceof BufferedOutput)
+        {
+            $output->write($this->output->fetch());
+        }
         $this->output = $output;
     }
 

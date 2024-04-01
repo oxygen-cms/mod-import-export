@@ -12,9 +12,9 @@ use ZipArchive;
 class PHPZipImportStrategy implements ImportStrategy {
 
     /**
-     * @var ZipArchive
+     * @var ZipArchive[]
      */
-    private $extractedDirectories = [];
+    private array $extractedDirectories = [];
 
     /**
      * Returns an iterator over files inside the extracted zip file pointed at by `$path`.

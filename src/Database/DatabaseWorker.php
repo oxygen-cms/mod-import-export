@@ -141,7 +141,6 @@ class DatabaseWorker implements WorkerInterface {
                     $this->config->get('backup.mysql.dumpCommandPath'),
                     $this->config->get('backup.mysql.restoreCommandPath')
                 );
-                break;
             case 'pgsql':
                 return new Driver\PostgresDriver(
                     $this->commandRunner,

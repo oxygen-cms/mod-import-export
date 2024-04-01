@@ -31,7 +31,7 @@ class ImportExportServiceProvider extends BaseServiceProvider {
         $this->loadRoutesFrom(__DIR__ . '/../resources/routes.php');
 
         $this->publishes([
-            __DIR__ . '/../resources/lang' => base_path('resources/lang/vendor/oxygen/mod-import-export'),
+            __DIR__ . '/../resources/lang' => $this->app->langPath('vendor/oxygen/mod-import-export'),
             __DIR__ . '/../resources/views' => base_path('resources/views/vendor/oxygen/mod-import-export'),
             __DIR__ . '/../config/config.php' => config_path('oxygen/mod-import-export.php')
 		]);

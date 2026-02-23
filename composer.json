@@ -15,8 +15,7 @@
     ],
     "require": {
         "php": "^8.1",
-        "oxygen/core": "~0.15.0",
-        "oxygen/crud": "~0.14.0",
+        "oxygen/core": "~1.0.0",
         "illuminate/support": "^10.0",
         "ext-zip": "^1.15",
         "symfony/process": "~6.4.4",

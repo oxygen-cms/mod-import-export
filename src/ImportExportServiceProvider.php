@@ -2,7 +2,6 @@
 
 namespace OxygenModule\ImportExport;
 
-use Oxygen\Core\Blueprint\BlueprintManager;
 use Oxygen\Data\BaseServiceProvider;
 use OxygenModule\ImportExport\Database\DatabaseManager;
 use OxygenModule\ImportExport\Database\DatabaseWorker;
